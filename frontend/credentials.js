@@ -5,8 +5,32 @@ const credentialsStatus = document.querySelector("#credentialsStatus");
 const credentialsForm = document.querySelector("#credentialsForm");
 const clearCredentialButton = document.querySelector("#clearCredentialButton");
 const reloadCredentialsButton = document.querySelector("#reloadCredentialsButton");
+const providerConnections = document.querySelector("#providerConnections");
 
 let allCredentials = [];
+
+const PROVIDERS = [
+  {
+    name: "Survey Merchandiser",
+    url: "https://survey.com/",
+    help: "Open the official Survey Merchandiser site or app.",
+  },
+  {
+    name: "Clickworker",
+    url: "https://workplace.clickworker.com/",
+    help: "Open the official Clickworker Workplace sign-in.",
+  },
+  {
+    name: "Field Nation",
+    url: "https://fieldnation.com/",
+    help: "Open the official Field Nation platform.",
+  },
+  {
+    name: "Field Agent",
+    url: "https://app.fieldagent.net/",
+    help: "Open the official Field Agent site or app.",
+  },
+];
 
 function setStatus(text) {
   if (credentialsStatus) credentialsStatus.textContent = text;
@@ -24,6 +48,46 @@ function clearForm() {
   credentialsForm.username.value = "";
   credentialsForm.password.value = "";
   credentialsForm.notes.value = "";
+}
+
+function renderProviderConnections() {
+  if (!providerConnections) return;
+  providerConnections.innerHTML = "";
+  PROVIDERS.forEach((provider) => {
+    const card = document.createElement("div");
+    card.className = "callout provider-card";
+
+    const title = document.createElement("strong");
+    title.textContent = provider.name;
+    const help = document.createElement("span");
+    help.textContent = provider.help;
+
+    const actions = document.createElement("div");
+    actions.className = "actions";
+
+    const openButton = document.createElement("a");
+    openButton.className = "secondary-link";
+    openButton.href = provider.url;
+    openButton.target = "_blank";
+    openButton.rel = "noopener noreferrer";
+    openButton.textContent = "Open official sign-in";
+
+    const setupButton = document.createElement("button");
+    setupButton.type = "button";
+    setupButton.className = "secondary tiny";
+    setupButton.textContent = "Add connection";
+    setupButton.addEventListener("click", () => {
+      credentialsForm.app_name.value = provider.name;
+      credentialsForm.login_url.value = provider.url;
+      credentialsForm.username.focus();
+      setStatus(`${provider.name} selected. Sign in at the official site, then save only the local metadata you want to keep.`);
+      credentialsForm.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+
+    actions.append(openButton, setupButton);
+    card.append(title, help, actions);
+    providerConnections.appendChild(card);
+  });
 }
 
 function fillForm(credential) {
@@ -122,4 +186,5 @@ if (credentialsForm) {
 clearCredentialButton?.addEventListener("click", clearForm);
 reloadCredentialsButton?.addEventListener("click", loadCredentials);
 
+renderProviderConnections();
 loadCredentials();
