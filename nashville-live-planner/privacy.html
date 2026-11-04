@@ -125,6 +125,20 @@
         invent route sections, stop names, or live verification when verified data is missing.
       </p>
 
+      <h2>Maps and Directions</h2>
+      <p>
+        The planner map uses Leaflet with CARTO and OpenStreetMap map tiles. It does not load the
+        Google Maps JavaScript API and therefore does not require a Google Maps browser API key
+        just to display the map. The optional “Open full route in Google Maps” action opens an
+        external Google Maps directions link for navigation; Google Maps then applies its own
+        terms, privacy policy, and account settings.
+      </p>
+      <p>
+        If map tiles are unavailable, the planner automatically falls back from the CARTO map to
+        OpenStreetMap street tiles. WeGo realtime transit data is fetched separately from the
+        planner's server-side public feed proxy.
+      </p>
+
       <h2>Contact</h2>
       <p>
         For questions about this private planner, use the account/contact email configured in the
