@@ -86,7 +86,7 @@ The historical README describes the requested status colors and route behavior. 
 
 ## Azure inventory
 
-The Azure CLI now sees the Azure for Students subscription through `kyle.taylor1@students.post.edu`. The subscription currently has no listed resource groups, storage accounts, or Key Vaults, so there is no existing Azure storage or vault binding to verify yet.
+The Azure CLI sees the Azure for Students subscription through `kyle.taylor1@students.post.edu`. The subscription was empty before provisioning; the planner resource group, storage account, blob container, Key Vault, and managed identity are now provisioned and listed below.
 
 ## Validation Proof
 
