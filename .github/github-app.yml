@@ -1,0 +1,4 @@
+server_ready_pattern: taylormade02471/linked-jobs-route-planner
+automation:
+  auto_issue_session: true
+  remote_control: true
