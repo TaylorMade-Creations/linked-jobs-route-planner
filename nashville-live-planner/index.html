@@ -256,7 +256,7 @@ main>#mainMap{order:1}
 </div>
 
 <div class="card"><div id="details"></div></div>
-<div class="card" id="mainMap"><div class="maptoolbar"><button id="cleanMap" class="active">Clean map</button><button id="streetMap">Street map</button><button id="fitMap">Fit selected route</button><button id="enableLocation">Enable my location</button><button id="centerMe">Center on me</button></div><div id="locationStatus" class="locationStatus">Location not enabled yet.</div><div class="maptoolbar"><button id="navigateNextJob" type="button">Navigate next job</button><button id="openGoogleRoute" type="button">Open full route in Google Maps</button><button id="toggleAllBuses" class="active" type="button">All WeGo buses</button></div><div id="navigationStatus" class="locationStatus">Enable location for live navigation.</div><div id="map"></div><div id="mapStatus" class="locationStatus">Map tiles are loading from CARTO/OpenStreetMap. No Google Maps browser key is required for this planner.</div><p style="font-size:12px;color:var(--muted)">Thick colored lines are only the verified saved GTFS pieces. White circles are boarding stops, smaller outlined circles are exit stops, and orange circles are actual live WeGo buses when the realtime feed identifies their route.</p></div>
+<div class="card" id="mainMap"><div class="maptoolbar"><button id="cleanMap" class="active">Clean map</button><button id="streetMap">Street map</button><button id="fitMap">Fit selected route</button><button id="enableLocation">Enable my location</button><button id="centerMe">Center on me</button></div><div id="locationStatus" class="locationStatus">Location not enabled yet.</div><div class="maptoolbar"><button id="navigateNextJob" type="button">Navigate next job</button><button id="openGoogleRoute" type="button">Open full route in Google Maps</button><button id="toggleAllBuses" class="active" type="button">All WeGo buses</button></div><div id="navigationStatus" class="locationStatus">Enable location for live navigation.</div><div id="map"></div><div id="mapStatus" class="locationStatus">Map tiles are loading from OpenStreetMap. No map API key is required for this planner.</div><p style="font-size:12px;color:var(--muted)">Thick colored lines are only the verified saved GTFS pieces. White circles are boarding stops, smaller outlined circles are exit stops, and orange circles are actual live WeGo buses when the realtime feed identifies their route.</p></div>
 <div class="card"><h3>Live buses on selected route piece(s)</h3><div id="buses"></div></div>
 <div class="card"><h3>Live alerts affecting selected route piece(s)</h3><div id="alerts"></div><p><a target="_blank" href="https://www.wegotransit.com/ride/alerts/">Official WeGo alerts</a> · <a target="_blank" href="https://www.wegotransit.com/routes/">WeGo Bus Arrival Info</a></p></div>
 <footer class="siteFooter"><b>Privacy-first field planner:</b> <a href="./privacy.html">Privacy Policy</a> · <a href="./terms.html">Terms of Service</a></footer>
@@ -275,22 +275,15 @@ const W=window.WorkAppBackbone;
 const C=window.ProviderConnectors;
 const A=window.AndroidAppBackbone;
 const map=L.map('map').setView([36.16,-86.78],11);
-const cleanTiles=L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{maxZoom:20,attribution:'© OpenStreetMap © CARTO'});
+const cleanTiles=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap contributors'});
 const streetTiles=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'});
 cleanTiles.addTo(map);
 const mapStatus=document.getElementById('mapStatus');
-let cleanTileErrors=0;
 cleanTiles.on('tileerror',()=>{
- cleanTileErrors+=1;
- if(cleanTileErrors<2)return;
- if(map.hasLayer(cleanTiles))map.removeLayer(cleanTiles);
- if(!map.hasLayer(streetTiles))streetTiles.addTo(map);
- document.getElementById('cleanMap').classList.remove('active');
- document.getElementById('streetMap').classList.add('active');
- if(mapStatus)mapStatus.textContent='CARTO tiles were unavailable, so the planner switched to the OpenStreetMap street-map fallback.';
+ if(mapStatus)mapStatus.textContent='OpenStreetMap tiles are temporarily unavailable. Check your connection and try the Street map button again.';
 });
 streetTiles.on('load',()=>{
- if(mapStatus)mapStatus.textContent='Map is ready. This planner uses OpenStreetMap/CARTO tiles; Google Maps is used only for optional turn-by-turn route links.';
+ if(mapStatus)mapStatus.textContent='Map is ready. This planner uses OpenStreetMap tiles; Google Maps is used only for optional turn-by-turn route links.';
 });
 let currentBounds=null;
 document.getElementById('cleanMap').onclick=()=>{if(map.hasLayer(streetTiles))map.removeLayer(streetTiles);if(!map.hasLayer(cleanTiles))cleanTiles.addTo(map);document.getElementById('cleanMap').classList.add('active');document.getElementById('streetMap').classList.remove('active')};
