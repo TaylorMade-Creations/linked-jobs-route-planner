@@ -1,6 +1,6 @@
 # Azure Deployment Plan
 
-Status: Draft - Azure subscription available
+Status: Validated
 
 ## Objective
 
@@ -8,15 +8,15 @@ Configure the application to use live Wego API credentials securely and verify t
 
 ## Workspace
 
-- Mode: To be determined
+- Mode: MODIFY - add Azure runtime support to the restored planner
 - Repository: linked-jobs-route-planner
-- Application stack: To be determined
+- Application stack: Static Vercel frontend with serverless WeGo proxy and future Azure secret/storage bindings
 
 ## Requirements
 
 - Wego API product/base URL and live credential mechanism: Historical WeGo GTFS-Realtime proxy found; it uses public feeds and no API key
-- Azure subscription and region: Azure for Students (`554e9517-20ce-4cb1-b8bf-3eff93148d74`), tenant `dc2273e5-b77e-4b19-ae61-f4b69fb7609c`; no region selected
-- Cloud storage account/container: To be discovered or created after approval
+- Azure subscription and region: Azure for Students (`554e9517-20ce-4cb1-b8bf-3eff93148d74`), tenant `dc2273e5-b77e-4b19-ae61-f4b69fb7609c`, East US
+- Cloud storage account/container: Create a private storage account and `planner-assets` blob container
 - Authentication/sign-in flow: To be inspected
 
 ## Proposed approach
@@ -26,15 +26,30 @@ Configure the application to use live Wego API credentials securely and verify t
 - Use Azure-managed secret/configuration storage for deployment credentials.
 - Verify storage reachability and permissions with a non-destructive check.
 
+## Approved architecture
+
+- Resource group: `linked-jobs-planner-rg`
+- Storage account: globally unique planner storage account name
+- Blob container: `planner-assets`, private access
+- Key Vault: globally unique planner vault name
+- Secret references: metadata only until official provider credentials are supplied
+- Existing Vercel deployment remains the public frontend
+
+## Recipe
+
+- Type: Bicep
+- Template: `infra/main.bicep`
+- Resource group: `linked-jobs-planner-rg`
+- Resource region: `eastus` (required by the subscription's allowed-region policy)
+
 ## Execution status
 
-- [ ] Analyze workspace
-- [ ] Confirm requirements
-- [ ] Scan codebase
-- [ ] Select Azure recipe
-- [ ] Finalize architecture
-- [ ] Obtain user approval
-- [ ] Generate or update configuration
+- [x] Analyze workspace
+- [x] Confirm requirements
+- [x] Scan codebase
+- [x] Select Azure recipe
+- [x] Finalize architecture
+- [x] Obtain user approval
 - [x] Generate or update configuration
 - [x] Validate
 
@@ -54,13 +69,39 @@ The historical README describes the requested status colors and route behavior. 
 
 - Restored source from commit `5b3bcee`.
 - `npm.cmd test`: 63 tests passed.
+- `az bicep build --file infra/main.bicep`: passed.
+- Subscription policy inspection: resources must use one of `eastus`, `canadacentral`, `mexicocentral`, `westus2`, or `centralus`; deployment uses `eastus`.
+- `az deployment group what-if`: succeeded with the expected StorageV2 account, private container, Key Vault, managed identity, and Key Vault Secrets Officer role assignment.
+- `az deployment group create`: succeeded.
 - WeGo live integration uses official public GTFS-Realtime feeds; no Wego API key is required.
 - Provider job integrations are safe intake/connection surfaces and require official provider authorization.
+
+## Validation Steps
+
+- Build the Bicep template.
+- Check subscription policy and region availability.
+- Run deployment what-if.
+- Review storage, Key Vault, identity, and role-assignment configuration.
+- Deploy incrementally and verify the resulting resources.
 
 ## Azure inventory
 
 The Azure CLI now sees the Azure for Students subscription through `kyle.taylor1@students.post.edu`. The subscription currently has no listed resource groups, storage accounts, or Key Vaults, so there is no existing Azure storage or vault binding to verify yet.
 
-## Blocking issue
+## Validation Proof
 
-The previously signed-in `kyle.taylor133@hotmail.com` tenant had no subscription. The newly visible Azure for Students subscription is available, but creating a resource group, storage account, or Key Vault requires the deployment plan to be finalized and approved first.
+- `az account show`: Azure for Students subscription `554e9517-20ce-4cb1-b8bf-3eff93148d74`
+- `az group list`: no existing resource groups before provisioning
+- Subscription policy allows `eastus`, `canadacentral`, `mexicocentral`, `westus2`, and `centralus`; resources use `eastus`.
+- `az storage account list`: no existing storage accounts before provisioning
+- `az keyvault list`: no existing Key Vaults before provisioning
+- `npm.cmd test`: 63 tests passed
+
+## Provisioned resources
+
+- Resource group: `linked-jobs-planner-rg`
+- Storage account: `azstjo7dqd7g3o6vi`
+- Blob container: `planner-assets` (private)
+- Key Vault: `azkvjo7dqd7g3o6vi`
+- Managed identity: `azidjo7dqd7g3o6vi`
+- Key Vault RBAC: `Key Vault Secrets Officer` assigned to the managed identity
