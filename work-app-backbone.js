@@ -912,6 +912,7 @@
     if (isNeedsCompletionJob(job)) return "red";
     if (isAssignedJob(job)) return "yellow";
     if (isOpenAvailableJob(job)) return "green";
+    if (normalizeStatus(job?.status) === "applied") return "blue";
     if (isCompletedJob(job)) return "gray";
     return "gray";
   }
@@ -930,6 +931,20 @@
 
     return (Array.isArray(jobs) ? jobs : [])
       .filter(isRouteVisibleJob)
+      .filter((job) => providerMatches(job, provider))
+      .filter((job) => statusMatches(job, requestedStatus))
+      .map((job) => ({
+        ...job,
+        status: normalizeStatus(job.status),
+        map_color: jobMapColor(job),
+      }));
+  }
+
+  function jobsForHomepageMap(jobs, filters = {}) {
+    const provider = asText(filters.provider_id || filters.provider || "all").toLowerCase();
+    const requestedStatus = normalizeStatus(filters.status || "all");
+
+    return (Array.isArray(jobs) ? jobs : [])
       .filter((job) => providerMatches(job, provider))
       .filter((job) => statusMatches(job, requestedStatus))
       .map((job) => ({
@@ -1058,6 +1073,7 @@
     jobMapColor,
     jobsForTab,
     jobsForMap,
+    jobsForHomepageMap,
     markJobsCompleted,
     moveJobsToFolder,
     moneyToCents,

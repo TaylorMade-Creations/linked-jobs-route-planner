@@ -351,6 +351,30 @@ test("map filtering supports all apps one app and green yellow red route statuse
   assert.equal(backbone.jobMapColor({ status: "available" }), "green");
   assert.equal(backbone.jobMapColor({ status: "assigned" }), "yellow");
   assert.equal(backbone.jobMapColor({ status: "needs completion" }), "red");
+  assert.equal(backbone.jobMapColor({ status: "applied" }), "blue");
+});
+
+test("homepage map includes every status without making all statuses route candidates", () => {
+  const jobs = [
+    { title: "Open", status: "available", coordinate: { lat: 36.1, lon: -86.7 } },
+    { title: "Applied", status: "applied", coordinate: { lat: 36.2, lon: -86.8 } },
+    { title: "Accepted", status: "assigned", coordinate: { lat: 36.3, lon: -86.9 } },
+    { title: "Urgent", status: "needs completion", coordinate: { lat: 36.4, lon: -87.0 } },
+    { title: "Done", status: "completed", coordinate: { lat: 36.5, lon: -87.1 } },
+  ];
+
+  assert.deepEqual(backbone.jobsForHomepageMap(jobs).map((job) => job.title), [
+    "Open",
+    "Applied",
+    "Accepted",
+    "Urgent",
+    "Done",
+  ]);
+  assert.deepEqual(backbone.jobsForMap(jobs).map((job) => job.title), [
+    "Open",
+    "Accepted",
+    "Urgent",
+  ]);
 });
 
 test("job tabs keep open accepted and completed work separate", () => {
