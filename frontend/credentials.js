@@ -13,21 +13,25 @@ const PROVIDERS = [
   {
     name: "Survey Merchandiser",
     url: "https://survey.com/",
+    appUrl: "intent://open/#Intent;package=iSurvey.Android;end",
     help: "Open the official Survey Merchandiser site or app.",
   },
   {
     name: "Clickworker",
     url: "https://workplace.clickworker.com/",
+    appUrl: "intent://open/#Intent;package=com.clickworker.clickworkerapp;end",
     help: "Open the official Clickworker Workplace sign-in.",
   },
   {
     name: "Field Nation",
     url: "https://fieldnation.com/",
+    appUrl: "intent://open/#Intent;package=com.fieldnation.android;end",
     help: "Open the official Field Nation platform.",
   },
   {
     name: "Field Agent",
     url: "https://app.fieldagent.net/",
+    appUrl: "intent://open/#Intent;package=net.fieldagent;end",
     help: "Open the official Field Agent site or app.",
   },
 ];
@@ -46,7 +50,6 @@ function clearForm() {
   credentialsForm.app_name.value = "";
   credentialsForm.login_url.value = "";
   credentialsForm.username.value = "";
-  credentialsForm.password.value = "";
   credentialsForm.notes.value = "";
 }
 
@@ -72,6 +75,11 @@ function renderProviderConnections() {
     openButton.rel = "noopener noreferrer";
     openButton.textContent = "Open official sign-in";
 
+    const appButton = document.createElement("a");
+    appButton.className = "secondary-link";
+    appButton.href = provider.appUrl;
+    appButton.textContent = "Open phone app";
+
     const setupButton = document.createElement("button");
     setupButton.type = "button";
     setupButton.className = "secondary tiny";
@@ -84,7 +92,7 @@ function renderProviderConnections() {
       credentialsForm.scrollIntoView({ behavior: "smooth", block: "start" });
     });
 
-    actions.append(openButton, setupButton);
+    actions.append(appButton, openButton, setupButton);
     card.append(title, help, actions);
     providerConnections.appendChild(card);
   });
@@ -96,7 +104,6 @@ function fillForm(credential) {
   credentialsForm.app_name.value = credential.app_name || "";
   credentialsForm.login_url.value = credential.login_url || "";
   credentialsForm.username.value = credential.username || "";
-  credentialsForm.password.value = "";
   credentialsForm.notes.value = credential.notes || "";
 }
 
@@ -161,7 +168,7 @@ async function saveCredential(extra = {}) {
       app_name: credentialsForm.app_name.value.trim(),
       login_url: credentialsForm.login_url.value.trim(),
       username: credentialsForm.username.value.trim(),
-      password: extra.password ?? credentialsForm.password.value,
+      password: "",
       notes: credentialsForm.notes.value.trim(),
     }),
   });
