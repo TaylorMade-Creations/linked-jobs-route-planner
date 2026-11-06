@@ -99,7 +99,8 @@ main>#mainMap{order:1}
    <button id="saveProviderNeedsLogin" type="button">Mark needs login</button>
   <button id="saveProviderBackground" type="button">Save background update settings</button>
    <button id="checkProviderNow" type="button">Check provider now</button>
-   <button id="clearProviderConnection" type="button">Clear this connection</button>
+  <button id="startNewProviderConnection" type="button">Start new connection</button>
+  <button id="clearProviderConnection" type="button">Clear this connection</button>
    <button id="syncSafeProviderJobs" type="button">Sync safe job data</button>
    <button id="loadSyncedProviderJobs" type="button">Load synced jobs</button>
   </div>
@@ -1310,6 +1311,15 @@ function initWorkApps(){
  });
  document.getElementById('saveProviderBackground')?.addEventListener('click',saveProviderBackgroundSettings);
  document.getElementById('checkProviderNow')?.addEventListener('click',checkProviderNow);
+ document.getElementById('startNewProviderConnection')?.addEventListener('click',()=>{
+  const provider=currentProvider();
+  delete providerConnections[provider.id];
+  saveProviderConnections();
+  renderProviderStats();
+  renderProviderConnection();
+  setProviderConnection('needs_login');
+  document.getElementById('openProviderBoard')?.click();
+ });
  document.getElementById('syncSafeProviderJobs')?.addEventListener('click',syncSafeProviderJobsToBackend);
  document.getElementById('loadSyncedProviderJobs')?.addEventListener('click',loadSyncedProviderJobsFromBackend);
  document.getElementById('saveEmailSync')?.addEventListener('click',()=>setEmailSyncSettings({sync_status:'Email permission settings saved locally.'}));
