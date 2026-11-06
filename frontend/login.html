@@ -81,20 +81,23 @@
         the signed-in browser tab or extension, so the dashboard does not need the browser session
         to stay open.
       </p>
+      <p class="meta">
+        Windows Hello and Google Password Manager can autofill or approve this sign-in when your
+        browser offers them. The planner never reads their saved credentials directly.
+      </p>
       <div class="message">%%MESSAGE%%</div>
       <form method="post" action="/auth/login">
         <label>
           Username
-          <input name="username" autocomplete="username" value="kyle" />
+          <input name="username" autocomplete="username" placeholder="Username" autofocus />
         </label>
         <label>
           Password
-          <input name="password" type="password" autocomplete="current-password" value="taylor" />
+          <input name="password" type="password" autocomplete="current-password" placeholder="Password" />
         </label>
         <button type="submit">Enter dashboard</button>
       </form>
-      <p class="meta">Default local credentials: <strong>kyle</strong> / <strong>taylor</strong></p>
+      <p class="meta">For local development only, use the credentials configured by the app owner.</p>
     </main>
   </body>
 </html>
-
